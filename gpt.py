@@ -24,7 +24,9 @@ headers = {
 }
 
 
-def query_gpt(prompt, fast=False):
+def query_gpt(prompt, fast=False, json_output=False):
+    if json_output:
+        prompt = prompt + "Return output as json. Return only json."
     data = {
         "model": "gpt-3.5-turbo" if fast else "gpt-4",
         "messages": [{"role": "user", "content": " ".join([GPT_PROMPT, prompt])}],
@@ -47,7 +49,9 @@ def query_gpt(prompt, fast=False):
                 buffer = ""
 
 
-def data_gpt(prompt, data_path):
+def data_gpt(prompt, data_path, json_output=False):
+    if json_output:
+        prompt = prompt + "Return output as json. Return only json."
     with open(data_path, "r") as data_file:
         file_content = data_file.read()
     prompt_input = json.dumps(prompt + " " + file_content)
@@ -79,18 +83,19 @@ def img_gpt(prompt):
 
 @click.group(invoke_without_command=True)
 @click.pass_context
-@click.argument("prompt", required=False)
-@click.argument("fname", required=False)
-def cli(ctx, prompt, fname):
+@click.argument("prompt", required=False, default=None)
+@click.argument("fname", required=False, default=None)
+@click.option("--json-output", "-j", is_flag=True, default=False)
+def cli(ctx, prompt, fname, json_output):
     if prompt and fname:
-        ctx.invoke(query_file, prompt=prompt, data_path=fname)
+        ctx.invoke(query_file, prompt=prompt, data_path=fname, json_output=json_output)
         return
     if prompt:
-        ctx.invoke(query_gpt, prompt=prompt)
+        ctx.invoke(query_gpt, prompt=prompt, json_output=json_output)
         return
     elif ctx.invoked_subcommand is None:
         click.echo("No command is given, executing the 'query' command by default.")
-        ctx.invoke(query_gpt, prompt=click.prompt("Enter the prompt"))
+        ctx.invoke(query_gpt, prompt=click.prompt("Enter the prompt"), json_output=json_output)
 
 
 @cli.command()
@@ -103,8 +108,8 @@ def image(prompt):
 @cli.command()
 @click.argument("prompt")
 @click.argument("data_path", type=click.Path(exists=True, dir_okay=False, readable=True))
-def query_file(prompt, data_path):
-    response = data_gpt(prompt, data_path)
+def query_file(prompt, data_path, json_output):
+    response = data_gpt(prompt, data_path, json_output)
     click.echo(response)
 
 
