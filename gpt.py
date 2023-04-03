@@ -5,12 +5,10 @@ import random
 import requests
 import click
 import sseclient
-import sys
 from rich.console import Console
 from rich.markdown import Markdown
 
 console = Console()
-from pathlib import Path
 
 GPT_PROMPT = """You are a personal assistant, you help the user with their daily tasks.
 You help with code problems by providing concise answers with only lines of code that have to changed. Prefer use of python, polars, PyTorch.
