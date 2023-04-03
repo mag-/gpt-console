@@ -1,5 +1,5 @@
 # gpt-console
-GPT console helper
+Unlock the Power of GPT: Experience Command-Line Magic with Interactive GPT Console!
 
 GPT console is a command-line utility that provides an interactive interface to interact with OpenAI's GPT-powered language model. 
 
